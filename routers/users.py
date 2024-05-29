@@ -29,6 +29,9 @@ class UserVerification(BaseModel):
     password: str
     new_password: str = Field(min_length=6)
 
+class PhoneVerification(BaseModel):
+    phone_number: int
+    new_phone_number: int
 
 @router.get('/', status_code=status.HTTP_200_OK)
 async def get_users(user: user_dependency, db: db_dependency):
@@ -49,3 +52,13 @@ async def change_password(user: user_dependency, db: db_dependency, user_verific
     db.commit()
 
 
+@router.put('/update_number', status_code=status.HTTP_204_NO_CONTENT)
+async def update_number(user: user_dependency, db: db_dependency,
+                        phone_verification: PhoneVerification):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Could not validate user')
+    user_model = db.query(Users).filter(Users.id == user.get('id')).first()
+    user_model.phone_number = phone_verification.new_phone_number
+
+    db.add(user_model)
+    db.commit()
