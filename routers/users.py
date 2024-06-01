@@ -62,3 +62,4 @@ async def update_number(user: user_dependency, db: db_dependency,
 
     db.add(user_model)
     db.commit()
+4
